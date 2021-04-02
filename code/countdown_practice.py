@@ -30,6 +30,23 @@ def draw_tiles(large = None, small = None):
 def make_target():
     return int(random.random()*900 + 100)
 
+def _add(a,b):
+    return a+b, f"{a} + {b} = {a+b}"
+
+def _mul(a,b):
+    return a*b, f"{a} * {b} = {a*b}"
+    
+def _sub(a,b):
+    M = max(a,b); m = min(a,b)
+    return M-m, f"{M} - {m} = {M-m}"
+
+def _div(a,b):
+    M = max(a,b); m = min(a,b)
+    if m>0 and M % m == 0:
+        return M // m, f"{M} / {m} = {M//m}"
+    else:
+        return None, None
+
 def all_possible_binary_sums(tiles):
     """All of the possible ways to combine two tiles. Keep the sums that get there, too."""
     # tiles is a sorted tuple
@@ -37,32 +54,16 @@ def all_possible_binary_sums(tiles):
     out = []
     for i, j in itertools.combinations(range(len(tiles)),2): 
         # have to do this index-wise to generate 'rest'
+        # this section is smelly.
         rest = [t for k,t in enumerate(tiles) if k not in (i,j)]
         si = tiles[i]
         sj = tiles[j]
-        mi = max(si ,sj)
-        mj = min(si, sj)
-        # add
-        a = si + sj
-        ta = [a] + rest
-        ta.sort()
-        out.append(( tuple(ta), f"{si} + {sj} = {a}"))
-        # sub
-        s = mi - mj
-        ts = [s] + rest
-        ts.sort()
-        out.append(( tuple(ts), f"{mi} - {mj} = {s}"))
-        # mul
-        m = si * sj
-        tm = [m] + rest
-        tm.sort()
-        out.append(( tuple(tm), f"{si} * {sj} = {m}"))
-        # div
-        if mj > 0 and mi % mj == 0:
-            d = mi // mj
-            td = [d] + rest
-            td.sort()
-            out.append(( tuple(td), f"{mi} / {mj} = {d}"))
+        for f in [_add, _mul, _div, _sub]:
+            res, cal = f(si,sj)
+            if res is not None:
+                temp_tiles = [res]+rest
+                temp_tiles.sort()
+                out.append( (tuple(temp_tiles), cal))
     return out
             
         
@@ -81,7 +82,8 @@ def solve_numbers_game(target, tiles):
             apb = all_possible_binary_sums(t)
             for si, wi in apb:
                 if target in si:
-                    out.append(f"{wj}; {wi}")
+                    for wj in w:
+                        out.append(f"{wj}; {wi}")
                 else:
                     for wj in w:
                         workings[si].append(f"{wj}; {wi}")
