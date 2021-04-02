@@ -1,6 +1,9 @@
 ### Countdown practice game
 
 import random
+import collections
+import itertools
+
 def draw_tiles(large = None, small = None):
     """Pull six tiles from the bag"""
     
@@ -25,12 +28,74 @@ def draw_tiles(large = None, small = None):
     return tiles
 
 def make_target():
-    """Target needs to be betweeen 100 and 999, inclusive"""
     return int(random.random()*900 + 100)
 
-def play_numbers_game():
-    """Practice your Countdown numbers game skills."""
-    n = None
+def all_possible_binary_sums(tiles):
+    """All of the possible ways to combine two tiles. Keep the sums that get there, too."""
+    # tiles is a sorted tuple
+    
+    out = []
+    for i, j in itertools.combinations(range(len(tiles)),2): 
+        # have to do this index-wise to generate 'rest'
+        rest = [t for k,t in enumerate(tiles) if k not in (i,j)]
+        si = tiles[i]
+        sj = tiles[j]
+        mi = max(si ,sj)
+        mj = min(si, sj)
+        # add
+        a = si + sj
+        ta = [a] + rest
+        ta.sort()
+        out.append(( tuple(ta), f"{si} + {sj} = {a}"))
+        # sub
+        s = mi - mj
+        ts = [s] + rest
+        ts.sort()
+        out.append(( tuple(ts), f"{mi} - {mj} = {s}"))
+        # mul
+        m = si * sj
+        tm = [m] + rest
+        tm.sort()
+        out.append(( tuple(tm), f"{si} * {sj} = {m}"))
+        # div
+        if mj > 0 and mi % mj == 0:
+            d = mi // mj
+            td = [d] + rest
+            td.sort()
+            out.append(( tuple(td), f"{mi} / {mj} = {d}"))
+    return out
+            
+        
+
+def solve_numbers_game(target, tiles):
+    """Recursively work through all possible Countdown sums, keep answers"""
+    # workings has as its key a frozenset of tiles, and all of the ways to reach that set as values.
+    out = []
+    tiles.sort()
+    workings = collections.defaultdict(list) 
+    workings[tuple(tiles)] = [""]
+    
+    while workings:
+        t, w = workings.popitem()
+        if len(t) >= 2:        
+            apb = all_possible_binary_sums(t)
+            for si, wi in apb:
+                if target in si:
+                    out.append(f"{wj}; {wi}")
+                else:
+                    for wj in w:
+                        workings[si].append(f"{wj}; {wi}")
+                    
+        print(len(workings), len(out))
+    return out
+                
+                
+    
+    
+
+
+def play_numbers_game(n = None):
+
     while n is None:
 
         try: 
@@ -43,4 +108,5 @@ def play_numbers_game():
 
     print (f"Your numbers are {nice_tiles}")
     print (f"And your target is {target}")
+    return target, tiles
             
