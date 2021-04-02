@@ -86,7 +86,7 @@ def solve_numbers_game(target, tiles):
                     for wj in w:
                         workings[si].append(f"{wj}; {wi}")
                     
-        print(len(workings), len(out))
+        
     return out
                 
                 
