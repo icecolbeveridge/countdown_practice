@@ -87,7 +87,8 @@ def remove_anagrams(solutions):
             out.append(x)
     return out
                 
-    
+def pretty(s):
+    return s.replace(";", "\n")
 
 
 def solve_numbers_game(target, tiles):
@@ -111,12 +112,9 @@ def solve_numbers_game(target, tiles):
                         workings[si].append(f"{wj}; {wi}")
                     
     # some of the outputs can be morally the same -- effectively anagrams of each other.
-    return remove_anagrams(out)
-                
-                
-    
-    
-
+    out = remove_anagrams(out)
+    out = [pretty(i) for i in out]  
+    return out    
 
 def play_numbers_game(n = None):
 
@@ -133,4 +131,9 @@ def play_numbers_game(n = None):
     print (f"Your numbers are {nice_tiles}")
     print (f"And your target is {target}")
     return target, tiles
-            
+    
+def play():
+    target, tiles = play_numbers_game()
+    out = solve_numbers_game(target,tiles)
+    input (f"Press return to see {len(out)} solutions.")
+    print ("\n***\n".join(out)               )
