@@ -67,6 +67,28 @@ def all_possible_binary_sums(tiles):
     return out
             
         
+def is_anagram(a,b):
+    ai = a.split(";")
+    bi = b.split(";")
+    ai.sort(); bi.sort()
+    z = zip(ai,bi)
+    return all( [i[0] == i[1] for i in z])
+    
+def remove_anagrams(solutions):
+    out = []
+    while solutions:
+        x = solutions.pop()
+        to_add = True
+        for i in out:
+            if is_anagram(x,i):
+                to_add = False
+                continue
+        if to_add:
+            out.append(x)
+    return out
+                
+    
+
 
 def solve_numbers_game(target, tiles):
     """Recursively work through all possible Countdown sums, keep answers"""
@@ -88,8 +110,8 @@ def solve_numbers_game(target, tiles):
                     for wj in w:
                         workings[si].append(f"{wj}; {wi}")
                     
-        
-    return out
+    # some of the outputs can be morally the same -- effectively anagrams of each other.
+    return remove_anagrams(out)
                 
                 
     
