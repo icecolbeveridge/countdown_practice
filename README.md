@@ -1,2 +1,5 @@
-# countdown_practice
-Practice for countdown numbers and letters game.
+# Countdown practice
+
+Practice for countdown numbers game.
+
+Part of my microproject project.
